@@ -1,5 +1,5 @@
-# purecloud2odbc
-Sample Go application that pulls previous interval queue statistics from PureCloud and writes it into an Microsoft Access database.
+# purecloudwallstats
+Sample Go application that pulls current interval queue statistics from PureCloud and writes it into an Microsoft Access database. Current interval statistics are suitable for wallboard use.
 
 What's missing: Agent interval stats
 
@@ -16,7 +16,7 @@ Imports the following:
 Create a new OAuth configuration with Client Credentials login and with a role that has access to queue statistics. Copy the Client ID and Client Secret from the OAuth configuration to the app's JSON configuration file.
 
 ### Microsoft Access database configuration
-The application stores statistics into an Access database. Run ODBC Data Source Administrator on a Windows computer and create a new DSN, user or system, and point it to a version 4.x Access database. Version 4.x uses an extension of .MDB. When you choose Microsoft Access Driver for the DSN, you can create the Access database too. Key in the name of this DSN into the JSON config file.
+The application stores statistics into an Access database. Run ODBC Data Source Administrator on a Windows computer and create a new DSN, user or system, and point it to a version 4.x Access database. Version 4.x uses an extension of .MDB. When you choose Microsoft Access Driver for the DSN, you can create the Access database too. Key in the name of this DSN into the JSON config file. It is also possible to use a SQL Server database, but there may be incompatibilities with the SQL statements used.
 
 ### JSON config file
 ```
@@ -24,7 +24,7 @@ The application stores statistics into an Access database. Run ODBC Data Source 
   "pureCloudRegion": "mypurecloud.com.au",
   "pureCloudClientId": <<from PureCloud OAuth configuration>>,
   "pureCloudClientSecret": <<from PureCloud OAuth configuration>>,
-  "odbcDsn": <<the name of ODBC DSN that points to the Access database>>,
+  "odbcDsn": <<the ODBC connection string to use>>,
   "granularity": "PT30M",
   "queues": [
     "c2788c7e-c8c5-40ac-97d9-51c3b364479b","276148ba-40ad-4bad-a5a3-fedb9ddcbbb5"
@@ -36,5 +36,5 @@ For `queues`, get the `QueueID` from PureCloud Contact Center Queue administrati
 
 ### Running the application
 ```
-purecloud2odbc <JSONconfigfile>
+purecloudwallstats <JSONconfigfile>
 ```
