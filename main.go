@@ -242,10 +242,6 @@ func queryAndWriteQueueStatsToDb(startInterval time.Time, endInterval time.Time)
 							switch {
 							case metric.Metric == "nError":
 								nError = int(metric.Stats.Count)
-							case metric.Metric == "oServiceLevel":
-								oServiceLevel = metric.Stats.Ratio
-							case metric.Metric == "oServiceTarget":
-								oServiceTarget = metric.Stats.Current
 							case metric.Metric == "nOffered":
 								nOffered = int(metric.Stats.Count)
 							case metric.Metric == "nOutboundAbandoned":
@@ -258,6 +254,12 @@ func queryAndWriteQueueStatsToDb(startInterval time.Time, endInterval time.Time)
 								nTransferred = int(metric.Stats.Count)
 							case metric.Metric == "nOverSla":
 								nOverSLA = int(metric.Stats.Count)
+							case metric.Metric == "oInteracting": // ignore this metric
+							case metric.Metric == "oServiceLevel":
+								oServiceLevel = metric.Stats.Ratio
+							case metric.Metric == "oServiceTarget":
+								oServiceTarget = metric.Stats.Current
+							case metric.Metric == "oWaiting": // ignore this metric
 							case metric.Metric == "tAbandon":
 								tAbandon = metric.Stats.Sum
 								mtAbandon = metric.Stats.Max
