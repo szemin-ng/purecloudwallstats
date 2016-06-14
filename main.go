@@ -214,8 +214,8 @@ func queryAndWriteQueueStatsToDb(startInterval time.Time, endInterval time.Time)
 	fmt.Printf("Querying queue stats for interval %s...\n", startInterval.Format(timeFormat))
 
 	// Query PureCloud stats
-	var aggResp purecloud.AggregateQueryResponse
-	var obsResp purecloud.ObservationQueryResponse
+	var aggResp analytics.AggregateQueryResponse
+	var obsResp analytics.ObservationQueryResponse
 	if aggResp, obsResp, err = queryQueueIntervalStats(startInterval, endInterval); err != nil {
 		fmt.Printf("Error: %s\n", err)
 		return
@@ -366,7 +366,7 @@ func queryAndWriteQueueStatsToDb(startInterval time.Time, endInterval time.Time)
 }
 
 // queryQueueIntervalStats prepares the PureCloud query, sends it to PureCloud and returns a response
-func queryQueueIntervalStats(startInterval time.Time, endInterval time.Time) (aggResp purecloud.AggregateQueryResponse, obsResp purecloud.ObservationQueryResponse, err error) {
+func queryQueueIntervalStats(startInterval time.Time, endInterval time.Time) (aggResp analytics.AggregateQueryResponse, obsResp analytics.ObservationQueryResponse, err error) {
 	// Create the following query to use in API call
 	/*
 		{
@@ -395,25 +395,25 @@ func queryQueueIntervalStats(startInterval time.Time, endInterval time.Time) (ag
 		}*/
 
 	// Query to send out
-	var aggQuery = purecloud.AggregationQuery{
+	var aggQuery = analytics.AggregationQuery{
 		Interval:    startInterval.Format(timeFormat) + "/" + endInterval.Format(timeFormat),
 		Granularity: appConfig.Granularity,
-		Filter: &purecloud.AnalyticsQueryFilter{
+		Filter: &analytics.AnalyticsQueryFilter{
 			Type: "and",
 		},
 		GroupBy: []string{"queueId"},
 	}
 
 	// Add media type clause into the query
-	var mediaTypeClause = purecloud.AnalyticsQueryClause{Type: "or"}
+	var mediaTypeClause = analytics.AnalyticsQueryClause{Type: "or"}
 	for _, mediaType := range supportedMediaType {
-		mediaTypeClause.Predicates = append(mediaTypeClause.Predicates, purecloud.AnalyticsQueryPredicate{Dimension: "mediaType", Value: mediaType})
+		mediaTypeClause.Predicates = append(mediaTypeClause.Predicates, analytics.AnalyticsQueryPredicate{Dimension: "mediaType", Value: mediaType})
 	}
 
 	// Add queue ID clause into the query
-	var queueIDClause = purecloud.AnalyticsQueryClause{Type: "or"}
+	var queueIDClause = analytics.AnalyticsQueryClause{Type: "or"}
 	for _, queueID := range appConfig.Queues {
-		queueIDClause.Predicates = append(queueIDClause.Predicates, purecloud.AnalyticsQueryPredicate{Dimension: "queueId", Value: queueID})
+		queueIDClause.Predicates = append(queueIDClause.Predicates, analytics.AnalyticsQueryPredicate{Dimension: "queueId", Value: queueID})
 	}
 
 	// Append the clauses to the query. We do it last because Go's append returns a new copy of the slice
@@ -427,7 +427,7 @@ func queryQueueIntervalStats(startInterval time.Time, endInterval time.Time) (ag
 	}
 
 	// Reuse same filter from aggregate query for observation query
-	var obsQuery purecloud.ObservationQuery
+	var obsQuery analytics.ObservationQuery
 	obsQuery.Filter = aggQuery.Filter
 
 	// Send query to PureCloud
